@@ -14,6 +14,21 @@ const HomeModel = {
             console.error("❌ Error fetching meetings:", error);
             throw error;
         }
+    },
+
+    async getCitizenshipStats() {
+        try {
+            const result = await pool.query(`
+                SELECT topic, COUNT(*) as count
+                FROM clients
+                WHERE topic IN ('German Citizenship', 'Austrian Citizenship', 'Polish Citizenship')
+                GROUP BY topic
+            `);
+            return result.rows;
+        } catch (error) {
+            console.error("❌ Error fetching citizenship statistics:", error);
+            throw error;
+        }
     }
 };
 

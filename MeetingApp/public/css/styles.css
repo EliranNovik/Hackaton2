@@ -40,7 +40,7 @@ body {
 
 /* Background Image for Home Page */
 .home-background {
-    background: url('/picture/Background_pic.jpg') no-repeat center center fixed;
+    background: url('/Background_pic.jpg') no-repeat center center fixed;
     background-size: cover;
     height: 100vh;  /* Full height */
     display: flex;

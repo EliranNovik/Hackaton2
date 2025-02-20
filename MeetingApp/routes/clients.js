@@ -12,6 +12,24 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Route to search clients by name or email
+router.get('/search', async (req, res) => {
+    const searchTerm = req.query.q.trim().toLowerCase();
+
+    try {
+        if (!searchTerm) {
+            return res.json([]); // Return empty array if search is empty
+        }
+
+        const clients = await ClientModel.searchClients(searchTerm);
+        res.json(clients);
+    } catch (err) {
+        console.error("❌ Error searching clients:", err);
+        res.status(500).json({ error: "❌ Error searching clients." });
+    }
+});
+
+
 router.post('/add', async (req, res) => {
     const { name, email, phone, description, topic } = req.body;
     try {

@@ -12,6 +12,21 @@ const ClientModel = {
         }
     },
 
+    // Search clients by name or email
+    async searchClients(searchTerm) {
+        try {
+            const result = await pool.query(
+            "SELECT * FROM clients WHERE LOWER(name) LIKE LOWER($1) OR LOWER(email) LIKE LOWER($1)",
+            [`%${searchTerm}%`]
+        );
+            return result.rows;
+        } catch (error) {
+            console.error("❌ Error searching clients:", error);
+            throw error;
+        }
+    },
+
+
     // Add a new client
     async addClient(name, email, phone, description, topic) {
         try {

@@ -5,9 +5,11 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         const meetings = await HomeModel.getAllMeetings();
-        res.render('home', { meetings });
+        const citizenshipStats = await HomeModel.getCitizenshipStats();
+
+        res.render('home', { meetings, citizenshipStats });
     } catch (err) {
-        console.error("❌ Error fetching meetings:", err);
+        console.error("❌ Error fetching data:", err);
         res.status(500).send("Database error.");
     }
 });

@@ -65,6 +65,9 @@
             <% }) %>
         </select>
 
+        <input type="text" id="searchInput" placeholder="🔍 Search by name or email..." onkeyup="searchClients()">
+        <div id="searchResults" style="border: 1px solid #ccc; padding: 10px; display: none;"></div>
+
         <div id="clientList">
             <% clients.forEach(client => { %>
                 <div class="client-item" id="client-<%= client.id %>" style="display: none;">
@@ -143,6 +146,55 @@
                 alert("Error updating client");
             }
         });
+
+        async function searchClients() {
+    let searchQuery = document.getElementById("searchInput").value.trim();
+    let resultsContainer = document.getElementById("searchResults");
+
+    if (searchQuery.length === 0) {
+        resultsContainer.innerHTML = "";
+        resultsContainer.style.display = "none";
+        return;
+    }
+
+    try {
+        const response = await fetch(`/clients/search?q=${searchQuery}`);
+        const clients = await response.json();
+
+        let resultsHTML = "";
+        if (clients.length > 0) {
+            resultsHTML = "<ul>";
+            clients.forEach(client => {
+                resultsHTML += `
+                    <li onclick="selectClient(${client.id}, '${client.name}', '${client.email}', '${client.phone}', '${client.description}', '${client.topic}')"
+                        style="cursor: pointer; padding: 5px; border-bottom: 1px solid #ddd;">
+                        <strong>${client.name}</strong> - ${client.email}
+                    </li>
+                `;
+            });
+            resultsHTML += "</ul>";
+        } else {
+            resultsHTML = "<p>No matching clients found.</p>";
+        }
+
+        resultsContainer.innerHTML = resultsHTML;
+        resultsContainer.style.display = "block";
+    } catch (error) {
+        console.error("❌ Error searching clients:", error);
+    }
+}
+
+// Function to select client from search results
+function selectClient(id, name, email, phone, description, topic) {
+    document.getElementById("clientDropdown").value = id;
+    document.getElementById("clientEmail").innerText = email;
+    document.getElementById("clientPhone").innerText = phone;
+    document.getElementById("clientTopic").innerText = topic;
+    document.getElementById("clientDescription").innerText = description;
+    document.getElementById("clientDetails").style.display = "block";
+
+    document.getElementById("searchResults").style.display = "none"; // Hide search results after selection
+}
 
         async function deleteClient(clientId) {
             if (confirm("Are you sure you want to delete this client?")) {

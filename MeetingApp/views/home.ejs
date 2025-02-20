@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/css/styles.css">
     <style>
         body  {
-            background: url('picture/Background_pic') no-repeat center center fixed;
+            background: url('/Background_pic.jpg') no-repeat center center fixed;
             background-size: cover;
             font-family: Arial, sans-serif;
             margin: 0;
@@ -60,6 +60,30 @@
             color: blue;
             font-weight: bold;
         }
+
+        .stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.stat-box {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+}
+
+.stat-box img {
+    width: 40px;
+    height: 30px;
+}
+
     </style>
 </head>
 <body>
@@ -88,6 +112,23 @@
             <% }) %>
         </ul>
     </div>
+
+    <h1>Citizenship Statistics</h1>
+    
+    <div class="stat-box">
+        <img src="/images/germany_flag.png" alt="🇩🇪">
+        <span>German Citizenship: <%= citizenshipStats["German Citizenship"] || 0 %></span>
+    </div>
+    <div class="stat-box">
+        <img src="/images/austria_flag.png" alt="🇦🇹">
+        <span>Austrian Citizenship: <%= citizenshipStats["Austrian Citizenship"] || 0 %></span>
+    </div>
+    <div class="stat-box">
+        <img src="/images/poland_flag.png" alt="🇵🇱">
+        <span>Polish Citizenship: <%= citizenshipStats["Polish Citizenship"] || 0 %></span>
+    </div>
+
+
 
 </body>
 </html>
