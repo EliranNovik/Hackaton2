@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body  {
+            background: url('picture/Background_pic') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: rgb(230, 189, 173);
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            margin: 0;
+        }
+
+        .navbar ul li {
+            margin: 0 20px;
+        }
+
+        .navbar ul li a {
+            text-decoration: none;
+            font-weight: bold;
+            color: black;
+            font-size: 18px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .meeting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .meeting-item a {
+            text-decoration: none;
+            color: blue;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <ul>
+            <li><a href="/">🏠 Home</a></li>
+            <li><a href="/clients">👥 Clients</a></li>
+            <li><a href="/meetings">📅 Meetings</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Upcoming Meetings</h1>
+
+        <ul>
+            <% meetings.forEach(meeting => { %>
+                <li class="meeting-item">
+                    <span>
+                        <strong>Client:</strong> <%= meeting.client_name %> |
+                        <strong>Email:</strong> <%= meeting.client_email %> |
+                        <strong>Date:</strong> <%= new Date(meeting.datetime).toLocaleString() %>
+                    </span>
+                    <a href="<%= meeting.teams_link %>" target="_blank">🔗 Join Meeting</a>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+
+</body>
+</html>

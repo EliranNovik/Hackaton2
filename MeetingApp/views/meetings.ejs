@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meetings</title>
+    <link rel="stylesheet" href="/MeetingApp/public/css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: rgb(173, 190, 230);
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            margin: 0;
+        }
+
+        .navbar ul li {
+            margin: 0 20px;
+        }
+
+        .navbar ul li a {
+            text-decoration: none;
+            font-weight: bold;
+            color: black;
+            font-size: 18px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <ul>
+            <li><a href="/">🏠 Home</a></li>
+            <li><a href="/clients">👥 Clients</a></li>
+            <li><a href="/meetings">📅 Meetings</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Meetings</h1>
+
+        <!-- Meeting List -->
+        <h2>Meeting List</h2>
+        <ul>
+            <% meetings.forEach(meeting => { %>
+                <li>
+                    <strong>Client:</strong> <%= meeting.client_name %> |
+                    <strong>Email:</strong> <%= meeting.client_email %> |
+                    <strong>Date:</strong> <%= new Date(meeting.datetime).toLocaleString() %> |
+                    
+                </li>
+                <a href="<%= meeting.teams_link %>" target="_blank">▶️ Join Meeting</a>
+            <% }) %>
+        </ul>
+
+        <!-- Create Meeting Form -->
+        <h2>Create a New Meeting</h2>
+        <form id="createMeetingForm">
+            <label for="clientSelect">Select a Client:</label>
+            <select id="clientSelect" name="client_id" required>
+                <option value="">-- Select Client --</option>
+                <% clients.forEach(client => { %>
+                    <option value="<%= client.id %>" data-email="<%= client.email %>" data-phone="<%= client.phone %>" 
+                            data-topic="<%= client.topic %>" data-description="<%= client.description %>">
+                        <%= client.name %>
+                    </option>
+                <% }) %>
+            </select>
+
+            <div id="clientDetails" style="display: none;">
+                <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="clientPhone"></span></p>
+                <p><strong>Topic:</strong> <span id="clientTopic"></span></p>
+                <p><strong>Description:</strong> <span id="clientDescription"></span></p>
+            </div>
+
+            <label for="meetingDate">Date:</label>
+            <input type="date" id="meetingDate" name="date" required>
+
+            <label for="meetingTime">Time:</label>
+            <input type="time" id="meetingTime" name="time" required>
+
+            <button type="submit">➕ Create Meeting</button>
+        </form>
+    </div>
+
+    <!-- JavaScript for Form Submission -->
+    <script>
+        document.getElementById("clientSelect").addEventListener("change", function () {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.value) {
+                document.getElementById("clientEmail").innerText = selectedOption.getAttribute("data-email");
+                document.getElementById("clientPhone").innerText = selectedOption.getAttribute("data-phone");
+                document.getElementById("clientTopic").innerText = selectedOption.getAttribute("data-topic");
+                document.getElementById("clientDescription").innerText = selectedOption.getAttribute("data-description");
+                document.getElementById("clientDetails").style.display = "block";
+            } else {
+                document.getElementById("clientDetails").style.display = "none";
+            }
+        });
+
+        document.getElementById("createMeetingForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const clientId = document.getElementById("clientSelect").value;
+            const date = document.getElementById("meetingDate").value;
+            const time = document.getElementById("meetingTime").value;
+
+            if (!clientId || !date || !time) {
+                alert("❌ Please select a client and choose a valid date & time.");
+                return;
+            }
+
+            const datetime = new Date(`${date}T${time}:00Z`).toISOString();
+            console.log("✅ Sending datetime:", datetime);
+
+            try {
+                const response = await fetch("/meetings/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ client_id: clientId, datetime })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(`✅ Meeting Created! Link: ${data.meetLink}`);
+                    location.reload();
+                } else {
+                    alert("❌ Error creating meeting. Check logs.");
+                }
+            } catch (error) {
+                alert("❌ Network error while creating meeting.");
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+/* General Page Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar Styling */
+.navbar {
+    width: 100%;
+    background-color: rgb(230, 189, 173);
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    margin: 0;
+}
+
+.navbar ul li {
+    margin: 0 20px;
+}
+
+.navbar ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
+    font-size: 18px;
+}
+
+/* Container Styling */
+.container {
+    padding: 20px;
+}
+
+/* Background Image for Home Page */
+.home-background {
+    background: url('/picture/Background_pic.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;  /* Full height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Meeting List Styling */
+.meeting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.meeting-item a {
+    text-decoration: none;
+    color: blue;
+    font-weight: bold;
+}
