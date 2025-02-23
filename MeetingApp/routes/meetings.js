@@ -30,25 +30,34 @@ router.get('/', async (req, res) => {
     }
 });
 
-// ✅ Create a Google Meet Meeting
+// ✅ Create a Google Meet Meeting and Store in DB
+// ✅ Create a Google Meet Meeting and Store in DB
 router.post('/create', async (req, res) => {
     console.log("📌 Received request body:", req.body);
 
     const { client_id, datetime } = req.body;
 
-    if (!datetime) {
-        return res.status(400).json({ error: "❌ datetime is missing from the request." });
+    if (!datetime || !client_id) {
+        console.log("❌ Missing required fields:", { client_id, datetime });
+        return res.status(400).json({ error: "❌ Missing required fields." });
     }
 
     try {
         const meetingStart = new Date(datetime).toISOString();
         const meetingEnd = new Date(new Date(meetingStart).getTime() + 60 * 60000).toISOString();
 
+        console.log("✅ Meeting Start:", meetingStart);
+        console.log("✅ Meeting End:", meetingEnd);
+
         const client = await ClientModel.getClientById(client_id);
         if (!client) {
+            console.log("❌ Client not found in DB for ID:", client_id);
             return res.status(404).json({ error: "❌ Client not found." });
         }
 
+        console.log("👤 Found Client:", client.name, "with email:", client.email);
+
+        // Create Google Meet Event
         const event = {
             summary: "Client Meeting",
             description: `Meeting with ${client.name}`,
@@ -58,22 +67,64 @@ router.post('/create', async (req, res) => {
             attendees: [{ email: client.email }]
         };
 
+        console.log("📢 Creating Google Meet Event...");
+        
         const response = await calendar.events.insert({
             calendarId: 'primary',
             resource: event,
             conferenceDataVersion: 1
         });
 
-        const meetLink = response.data.hangoutLink;
+        if (!response.data.hangoutLink) {
+            console.log("❌ Google Meet link not generated!");
+            return res.status(500).json({ error: "❌ Google Meet link generation failed." });
+        }
 
-        await MeetingModel.addMeeting(client_id, meetingStart, meetLink, "");
+        const teams_link = response.data.hangoutLink;
+        console.log("🔗 Google Meet Link Generated:", teams_link);
 
-        res.json({ success: true, meetLink });
+        // Save Meeting to Database
+        console.log("📢 Saving Meeting to Database...");
+        const meeting = await MeetingModel.addMeeting(client_id, meetingStart, teams_link, "");
+
+        console.log("✅ Meeting successfully saved to DB:", meeting);
+        res.json({ success: true, teams_link });
+
     } catch (err) {
-        console.error("❌ Error creating Google Meet meeting:", err);
-        res.status(500).json({ error: "Error creating Google Meet meeting." });
+        console.error("❌ Error creating meeting:", err);
+        res.status(500).json({ error: "Error creating meeting." });
     }
 });
 
+
+// SEARCH CLIENTS WITH MEETINGS
+router.get('/search', async (req, res) => {
+    const searchQuery = req.query.q.toLowerCase();
+
+    try {
+        const meetings = await MeetingModel.searchMeetingsByClient(searchQuery);
+        res.json(meetings);
+    } catch (err) {
+        console.error("❌ Error searching for meetings:", err);
+        res.status(500).json({ error: "Error fetching meetings" });
+    }
+});
+
+router.get('/search', async (req, res) => {
+    try {
+        const searchQuery = req.query.q.toLowerCase();
+
+        console.log("🔍 Searching for meetings with query:", searchQuery);
+
+        const meetings = await MeetingModel.searchMeetingsByClient(searchQuery);
+
+        console.log("✅ Meetings found:", meetings);
+
+        res.json(meetings);
+    } catch (err) {
+        console.error("❌ Error searching for meetings:", err);
+        res.status(500).json({ error: "Error fetching meetings" });
+    }
+});
 
 module.exports = router;

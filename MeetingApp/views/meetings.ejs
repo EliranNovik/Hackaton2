@@ -44,100 +44,83 @@
         }
 
         ul {
-    list-style: none;
-    padding: 0;
-}
+            list-style: none;
+            padding: 0;
+        }
 
-.meeting-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #f9f9f9;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-}
+        .meeting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
 
-.meeting-item a {
-    text-decoration: none;
-    color: rgb(37, 110, 94);
-    font-weight: bold;
-}
-
-
-
-        
+        .meeting-item a {
+            text-decoration: none;
+            color: rgb(37, 110, 94);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/clients">Clients</a></li>
-            <li><a href="/meetings">Meetings</a></li>
-        </ul>
-        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+        <div class="navbar-left">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/clients">Clients</a></li>
+                <li><a href="/meetings">Meetings</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-right">
+            <input type="text" id="searchMeetingInput" class="search-bar" placeholder="Search for meetings..." onkeyup="searchMeetings()">
+        </div>
     </nav>
-    
-    <!-- Mobile Menu -->
-<div id="mobileMenu" class="mobile-menu">
-    <ul>
-        <% if (typeof page !== 'undefined' && page === 'meetings') { %>
-            <li><a href="#meetingList">View Meetings List</a></li>
-            <li><a href="#createMeetingForm">Create New Meeting</a></li>
-        <% } %>
-    </ul>
-</div>
 
-    
+    <div id="meetingSearchResults" style="display: none;"></div>
 
-    <div class="container">
-        <h1>Meetings</h1>
-
-        <!-- Meeting List -->
-        <h2>Meeting List</h2>
-        <ul>
-            <% meetings.forEach(meeting => { %>
-                <li class="meeting-item">
-                    <span>
-                        <strong>Client:</strong> <%= meeting.client_name %> |
-                        <strong>Email:</strong> <%= meeting.client_email %> |
-                        <strong>Date:</strong> <%= new Date(meeting.datetime).toLocaleString() %>
-                    </span>
-                    <a href="<%= meeting.teams_link %>" target="_blank">🔗 Join Meeting</a>
-                </li>
-            <% }) %>
-        </ul>
-        
-        <h2>Manage Your Meetings</h2>
-<a href="https://calendar.google.com" target="_blank">
-    <button style="padding: 10px; font-size: 16px; background-color: rgb(37, 110, 94); color: white; border: none; cursor: pointer;">
-        📅 Open Google Calendar
-    </button>
-</a>
-
-        <!-- Create Meeting Form -->
-        <h2>Create a New Meeting</h2>
-        <form id="createMeetingForm">
-            <label for="clientSelect">Select a Client:</label>
-            <select id="clientSelect" name="client_id" required>
-                <option value="">-- Select Client --</option>
-                <% clients.forEach(client => { %>
-                    <option value="<%= client.id %>" data-email="<%= client.email %>" data-phone="<%= client.phone %>" 
-                            data-topic="<%= client.topic %>" data-description="<%= client.description %>">
-                        <%= client.name %>
-                    </option>
-                <% }) %>
-            </select>
-
-            <div id="clientDetails" style="display: none;">
-                <p><strong>Email:</strong> <span id="clientEmail"></span></p>
-                <p><strong>Phone:</strong> <span id="clientPhone"></span></p>
-                <p><strong>Topic:</strong> <span id="clientTopic"></span></p>
-                <p><strong>Description:</strong> <span id="clientDescription"></span></p>
+    <div id="meetingList">
+        <% meetings.forEach(meeting => { %>
+            <div class="meeting-item" id="meeting-<%= meeting.id %>">
+                <p><strong>Client:</strong> <%= meeting.client_name %></p>
+                <p><strong>Email:</strong> <%= meeting.client_email %></p>
+                <p><strong>Date:</strong> <%= new Date(meeting.datetime).toLocaleString() %></p>
+                <p><strong>Meeting Link:</strong> <a href="<%= meeting.teams_link %>" target="_blank">🔗 Join Meeting</a></p>
             </div>
+        <% }) %>
+    </div>
 
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+
+    <div id="mobileMenu" class="mobile-menu">
+        <ul>
+            <li><a href="https://calendar.google.com">Access Google Calendar</a></li>
+            <li><a href="#" onclick="toggleCreateMeetingForm()">Create New Meeting</a></li>
+        </ul>
+    </div>
+
+    <div id="createMeetingFormContainer" style="display: none;">
+        <h2 id="createMeetingHeader">Create a New Meeting</h2>
+
+        <div id="clientSearchContainer">
+            <input type="text" id="clientSearch" class="search-bar" placeholder="Search client..." onkeyup="searchClientsForMeeting()">
+            <div id="clientSearchResults" style="display: none;"></div>
+        </div>
+
+        <div id="selectedClientDetails" style="display: none;">
+            <h3>Selected Client</h3>
+            <p><strong>Name:</strong> <span id="selectedClientName"></span></p>
+            <p><strong>Email:</strong> <span id="selectedClientEmail"></span></p>
+            <p><strong>Phone:</strong> <span id="selectedClientPhone"></span></p>
+            <p><strong>Topic:</strong> <span id="selectedClientTopic"></span></p>
+            <p><strong>Description:</strong> <span id="selectedClientDescription"></span></p>
+        </div>
+
+        <form id="createMeetingForm" style="display: none;">
             <label for="meetingDate">Date:</label>
             <input type="date" id="meetingDate" name="date" required>
 
@@ -145,67 +128,184 @@
             <input type="time" id="meetingTime" name="time" required>
 
             <button type="submit">Create Meeting</button>
+            <button type="button" onclick="cancelCreateMeeting()">Cancel</button>
         </form>
     </div>
 
-    <!-- JavaScript for Form Submission -->
     <script>
-        document.getElementById("clientSelect").addEventListener("change", function () {
-            const selectedOption = this.options[this.selectedIndex];
-            if (selectedOption.value) {
-                document.getElementById("clientEmail").innerText = selectedOption.getAttribute("data-email");
-                document.getElementById("clientPhone").innerText = selectedOption.getAttribute("data-phone");
-                document.getElementById("clientTopic").innerText = selectedOption.getAttribute("data-topic");
-                document.getElementById("clientDescription").innerText = selectedOption.getAttribute("data-description");
-                document.getElementById("clientDetails").style.display = "block";
-            } else {
-                document.getElementById("clientDetails").style.display = "none";
-            }
-        });
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("🚀 DOM fully loaded!");
 
-        document.getElementById("createMeetingForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+            const meetingForm = document.getElementById("createMeetingForm");
 
-            const clientId = document.getElementById("clientSelect").value;
-            const date = document.getElementById("meetingDate").value;
-            const time = document.getElementById("meetingTime").value;
+            if (meetingForm) {
+                meetingForm.addEventListener("submit", async function (event) {
+                    event.preventDefault();
 
-            if (!clientId || !date || !time) {
-                alert("❌ Please select a client and choose a valid date & time.");
-                return;
-            }
+                    const clientId = this.dataset.clientId;
+                    if (!clientId) {
+                        alert("❌ Error: No client selected.");
+                        return;
+                    }
 
-            const datetime = new Date(`${date}T${time}:00Z`).toISOString();
-            console.log("✅ Sending datetime:", datetime);
+                    const date = document.getElementById("meetingDate").value;
+                    const time = document.getElementById("meetingTime").value;
 
-            try {
-                const response = await fetch("/meetings/create", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ client_id: clientId, datetime })
+                    if (!date || !time) {
+                        alert("❌ Please enter a valid date & time.");
+                        return;
+                    }
+
+                    const datetime = new Date(`${date}T${time}:00Z`).toISOString();
+
+                    try {
+                        const response = await fetch("/meetings/create", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ client_id: clientId, datetime })
+                        });
+
+                        if (response.ok) {
+                            alert("✅ Meeting created successfully!");
+                            location.reload();
+                        } else {
+                            alert("❌ Error creating meeting.");
+                        }
+                    } catch (error) {
+                        alert("❌ Network error while creating meeting.");
+                    }
                 });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    location.reload();
-                } else {
-                    alert("❌ Error creating meeting. Check logs.");
-                }
-            } catch (error) {
-                alert("❌ Network error while creating meeting.");
             }
         });
+
+        function toggleCreateMeetingForm() {
+    const searchContainer = document.getElementById("clientSearchContainer");
+    const meetingFormContainer = document.getElementById("createMeetingFormContainer");
+    const meetingHeader = document.getElementById("createMeetingHeader");
+    const meetingList = document.getElementById("meetingList"); // Meeting list container
+
+    if (meetingFormContainer.style.display === "none" || meetingFormContainer.style.display === "") {
+        // Show form and search
+        searchContainer.style.display = "block"; 
+        meetingFormContainer.style.display = "block"; 
+        meetingHeader.style.display = "block";
+
+        // Hide the meeting list
+        if (meetingList) {
+            meetingList.style.display = "none";
+        }
+    } else {
+        cancelCreateMeeting(); // Reset everything if toggling off
+    }
+
+    document.getElementById("mobileMenu").classList.remove("active");
+}
+
+
+function cancelCreateMeeting() {
+    console.log("🚀 Canceling meeting creation...");
+
+    const meetingFormContainer = document.getElementById("createMeetingFormContainer");
+    const meetingList = document.getElementById("meetingList"); // Meeting list
+    const clientSearchContainer = document.getElementById("clientSearchContainer");
+    const selectedClientDetails = document.getElementById("selectedClientDetails");
+
+    if (meetingFormContainer) meetingFormContainer.style.display = "none";
+    if (clientSearchContainer) clientSearchContainer.style.display = "none";
+    if (selectedClientDetails) selectedClientDetails.style.display = "none";
+
+    // ✅ Restore the meeting list when canceling
+    if (meetingList) meetingList.style.display = "block"; 
+
+    // Clear any previously entered data in the form
+    document.getElementById("clientSearch").value = "";
+    document.getElementById("meetingDate").value = "";
+    document.getElementById("meetingTime").value = "";
+
+    console.log("✅ Meeting creation form successfully reset.");
+}
+
+
+async function searchClientsForMeeting() {
+    let searchQuery = document.getElementById("clientSearch").value.trim();
+    let resultsContainer = document.getElementById("clientSearchResults");
+
+    if (searchQuery.length === 0) {
+        resultsContainer.innerHTML = "";
+        resultsContainer.style.display = "none";
+        return;
+    }
+
+    try {
+        const response = await fetch(`/clients/search?q=${searchQuery}`);
+        const clients = await response.json();
+
+        let resultsHTML = "";
+        if (clients.length > 0) {
+            resultsHTML = `<ul class='search-results-box'>`; // Apply new class
+            clients.forEach(client => {
+                resultsHTML += `
+                    <li class='search-result-item' onclick="selectClientForMeeting(${client.id}, '${client.name}', '${client.email}', '${client.phone || ''}', '${client.topic || ''}', '${client.description || ''}')">
+                        <strong>${client.name}</strong> - ${client.email}
+                    </li>
+                `;
+            });
+            resultsHTML += "</ul>";
+        } else {
+            resultsHTML = "<p class='no-results'>No matching clients found.</p>";
+        }
+
+        resultsContainer.innerHTML = resultsHTML;
+        resultsContainer.style.display = "block";
+    } catch (error) {
+        console.error("❌ Error searching clients:", error);
+    }
+};
+
 
         function toggleMenu() {
-        const mobileMenu = document.getElementById("mobileMenu");
+    console.log("🚀 Toggling menu...");
+    
+    const mobileMenu = document.getElementById("mobileMenu");
+    if (mobileMenu) {
         mobileMenu.classList.toggle("active");
+    } else {
+        console.error("❌ Error: mobileMenu element not found.");
+    }
+};
+
+function selectClientForMeeting(id, name, email, phone, topic, description) {
+    console.log("✅ Selecting client:", { id, name, email, phone, topic, description });
+
+    // Ensure clientSearchResults exists before hiding it
+    const clientSearchResults = document.getElementById("clientSearchResults");
+    if (clientSearchResults) {
+        clientSearchResults.style.display = "none";
+    } else {
+        console.error("❌ Error: clientSearchResults element not found.");
     }
 
-    function openAddClientForm() {
-        document.querySelector('form[action="/clients/add"]').scrollIntoView({ behavior: "smooth" });
-        toggleMenu();
+    // Ensure selected client details exist before modifying them
+    document.getElementById("selectedClientDetails").style.display = "block";
+    document.getElementById("selectedClientName").innerText = name || "N/A";
+    document.getElementById("selectedClientEmail").innerText = email || "N/A";
+    document.getElementById("selectedClientPhone").innerText = phone || "N/A";
+    document.getElementById("selectedClientTopic").innerText = topic || "N/A";
+    document.getElementById("selectedClientDescription").innerText = description || "N/A";
+
+    // Ensure the meeting form exists before updating dataset
+    const meetingForm = document.getElementById("createMeetingForm");
+    if (meetingForm) {
+        meetingForm.dataset.clientId = id;
+        meetingForm.style.display = "block"; // Show meeting form
+    } else {
+        console.error("❌ Error: createMeetingForm element not found.");
     }
+
+    document.getElementById("createMeetingHeader").style.display = "block";
+};
+
+
     </script>
 
 </body>

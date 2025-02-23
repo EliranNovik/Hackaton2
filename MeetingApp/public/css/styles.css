@@ -241,6 +241,18 @@ body::before {
     height: 30px;
 }
 
+#selectedClientDetails{
+    background: rgba(255, 255, 255, 0.9);
+    position: center;
+    justify-content: flex-start;
+    padding: 40px;
+    border-radius: 8px;
+    width: 500px;
+    margin: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    color: black;
+}
+
 /* Form Button Styling */
 button {
     padding: 10px 20px;
@@ -261,10 +273,30 @@ button:hover {
     background: rgba(255, 255, 255, 0.9);
     padding: 20px;
     border-radius: 8px;
-    width: 300px;
+    width: 500px;
     margin: auto;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
+#editClientModal{
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    margin: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    color: black;
+}
+
+#createMeetingForm{
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px;
+    margin: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    color: black;
+}
+
 
 .client-box {
     background: white;
@@ -276,5 +308,82 @@ button:hover {
     width: 60%; /* Adjust width as needed */
     max-width: 600px;
 }
+
+/* 🔹 Search Results Styling */
+.search-results {
+    position: absolute;
+    background: white;
+    width: 250px;
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1000;
+    top: 50px; /* Adjusts positioning under search bar */
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+}
+
+.search-results ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.search-results li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.search-results li:last-child {
+    border-bottom: none;
+}
+
+.search-results li:hover {
+    background: rgba(30, 123, 120, 0.2);
+}
+
+/* 🔹 Ensuring the search bar has spacing */
+.navbar-center {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-results-box {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 300px;
+    color: black;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 5px;
+    z-index: 1000;
+}
+
+.search-result-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.search-result-item:hover {
+    background: #f1f1f1;
+}
+
+.no-results {
+    padding: 10px;
+    color: red;
+    text-align: center;
+}
+
+
 
 

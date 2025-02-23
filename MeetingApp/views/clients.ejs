@@ -6,61 +6,10 @@
     <title>Clients</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        color:rgb(30, 92, 82);
-    }
-
-    .client-box {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 20px 0;
-    color:  black;
-    width: 60%;
-    max-width: 600px;
-}
-
-
-    .navbar {
-        width: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .navbar ul {
-        list-style: none;
-        padding: 0;
-        display: flex;
-        margin: 0;
-    }
-
-    .navbar ul li {
-        margin: 0 20px;
-    }
-
-    .navbar ul li a {
-        text-decoration: none;
-        font-weight: bold;
-        color: white;
-        font-size: 18px;
-    }
-
-    .container {
-        padding: 20px;
-    }
-</style>
 <body>
 
+    <!-- 🔹 Navbar -->
     <nav class="navbar">
-        <!-- Left Navigation Links -->
         <div class="navbar-left">
             <ul>
                 <li><a href="/">Home</a></li>
@@ -68,140 +17,76 @@
                 <li><a href="/meetings">Meetings</a></li>
             </ul>
         </div>
+
+        <!-- 🔹 Center Section (Search & Dropdown) -->
+        <div class="navbar-center">
+    <input type="text" id="searchInput" class="search-bar" placeholder="Search clients..." onkeyup="searchClients()">
+    <select id="clientDropdown" class="client-select" onchange="showSelectedClient()">
+        <option value="">-- Select Client --</option>
+        <% clients.forEach(client => { %>
+            <option value="<%= client.id %>" 
+                    data-name="<%= client.name %>" 
+                    data-email="<%= client.email %>" 
+                    data-phone="<%= client.phone %>" 
+                    data-topic="<%= client.topic %>" 
+                    data-description="<%= client.description %>">
+                <%= client.name %>
+            </option>
+        <% }) %>
+    </select>
     
-        <!-- Search Bar & Client Dropdown (Now in Navbar) -->
-    <div class="navbar-right">
-        <input type="text" id="searchInput" class="search-bar" placeholder="Search clients..." onkeyup="searchClients()">
-        <select id="clientDropdown" class="client-select" onchange="showSelectedClient()">
-            <option value="">-- Select Client --</option>
-            <% clients.forEach(client => { %>
-                <option value="<%= client.id %>"><%= client.name %></option>
-            <% }) %>
-        </select>
+    <!-- 🔹 Styled Search Results Box -->
+    <div id="searchResults" class="search-results"></div>
+</div>
+
+        <!-- 🔹 Right Section (Hamburger Menu) -->
+        <div class="navbar-right">
+            <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+        </div>
+    </nav>
+
+    <!-- 🔹 Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+        <ul>
+            <li><a href="#" onclick="toggleAddClientForm()">Add New Client</a></li>
+        </ul>
     </div>
 
-    
-</nav>
+    <!-- 🔹 Search Results -->
+    <div id="searchResults" class="search-results"></div>
 
-<!-- Search Results (Hidden by Default) -->
-<div id="searchResults" style="border: 1px solid #ccc; padding: 10px; display: none; position: absolute; background: white; width: 200px; color: black; top: 50px; right: 250px; z-index: 1000;">
-</div>
+    <!-- 🔹 Client List -->
+    <div id="clientListContainer"></div>
 
-<!-- Client List (Only Selected Client Shows) -->
-<div id="clientList">
-    <% clients.forEach(client => { %>
-        <div class="client-box" id="client-<%= client.id %>" style="display: none;">
-            <p><strong>Name:</strong> <%= client.name %></p>
-            <p><strong>Email:</strong> <%= client.email %></p>
-            <p><strong>Phone:</strong> <%= client.phone %></p>
-            <p><strong>Topic:</strong> <%= client.topic %></p>
-            <p><strong>Description:</strong> <%= client.description %></p>
+    <!-- 🔹 Add Client Form -->
+    <div id="addClientFormContainer" style="display: none; margin-top: 80px; color: black;">
+        <h2>Add a New Client</h2>
+        <form id="addClientForm" action="/clients/add" method="POST">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="phone" placeholder="Phone">
+            <input type="text" name="topic" placeholder="Topic">
+            <textarea name="description" placeholder="Case Description"></textarea>
+            <button type="submit">Add Client</button>
+        </form>
+    </div>
 
-            <button onclick="openEditForm('<%= client.id %>', '<%= client.name %>', '<%= client.email %>', '<%= client.phone %>', '<%= client.description %>', '<%= client.topic %>')">Edit</button>
-            <button onclick="deleteClient('<%= client.id %>')">Delete</button>
-        </div>
-    <% }) %>
-</div>
-
-    
-        <!-- Hamburger Menu for Mobile -->
-        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-    </nav>
-    
-    
-    
-    <!-- Mobile Menu -->
-<div id="mobileMenu" class="mobile-menu">
-    <ul>
-        <li><a href="#" onclick="toggleAddClientForm()">Add New Client</a></li>
-    </ul>
-</div>
-
-
-    <div class="container">        
-        <div id="clientList">
-            <% clients.forEach(client => { %>
-                <div class="client-item" id="client-<%= client.id %>" style="display: none;">
-                    <p><strong>Name:</strong> <%= client.name %></p>
-                    <p><strong>Email:</strong> <%= client.email %></p>
-                    <p><strong>Phone:</strong> <%= client.phone %></p>
-                    <p><strong>Topic:</strong> <%= client.topic %></p>
-                    <p><strong>Description:</strong> <%= client.description %></p>
-                    
-                    <button onclick="openEditForm('<%= client.id %>', '<%= client.name %>', '<%= client.email %>', '<%= client.phone %>', '<%= client.description %>', '<%= client.topic %>')">Edit</button>
-                    <button onclick="deleteClient('<%= client.id %>')">Delete</button>
-                </div>
-            <% }) %>
-        </div>
-
-        <!-- Add New Client Form (Initially Hidden) -->
-<div id="addClientFormContainer" style="display: none; margin-top: 20px;">
-    <h2>Add a New Client</h2>
-    <form id="addClientForm" action="/clients/add" method="POST">
-        <input type="text" name="name" placeholder="Name" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="text" name="phone" placeholder="Phone">
-        <input type="text" name="topic" placeholder="Topic">
-        <textarea name="description" placeholder="Case Description"></textarea>
-        <button type="submit">Add Client</button>
-    </form>
-</div>
-
-
-        <!-- Edit Client Form -->
-        <div id="editClientModal" style="display: none;">
-            <h2>Edit Client</h2>
-            <form id="editClientForm">
-                <input type="hidden" id="editClientId" name="clientId">
-                <input type="text" id="editName" name="name" required>
-                <input type="email" id="editEmail" name="email" required>
-                <input type="text" id="editPhone" name="phone">
-                <input type="text" id="editTopic" name="topic">
-                <textarea id="editDescription" name="description"></textarea>
-                <button type="submit">Update Client</button>
-                <button type="button" onclick="closeEditForm()">Cancel</button>
-            </form>
-        </div>
+    <!-- 🔹 Edit Client Modal -->
+    <div id="editClientModal" style="display: none;">
+        <h2>Edit Client</h2>
+        <form id="editClientForm">
+            <input type="hidden" id="editClientId" name="clientId">
+            <input type="text" id="editName" name="name" required>
+            <input type="email" id="editEmail" name="email" required>
+            <input type="text" id="editPhone" name="phone">
+            <input type="text" id="editTopic" name="topic">
+            <textarea id="editDescription" name="description"></textarea>
+            <button type="submit">Update Client</button>
+            <button type="button" onclick="closeEditForm()">Cancel</button>
+        </form>
     </div>
 
     <script>
-        function openEditForm(id, name, email, phone, description, topic) {
-            document.getElementById("editClientId").value = id;
-            document.getElementById("editName").value = name;
-            document.getElementById("editEmail").value = email;
-            document.getElementById("editPhone").value = phone;
-            document.getElementById("editDescription").value = description;
-            document.getElementById("editTopic").value = topic;
-            document.getElementById("editClientModal").style.display = "block";
-        }
-
-        function closeEditForm() {
-            document.getElementById("editClientModal").style.display = "none";
-        }
-
-        document.getElementById("editClientForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
-            
-            const clientId = document.getElementById("editClientId").value;
-            const name = document.getElementById("editName").value;
-            const email = document.getElementById("editEmail").value;
-            const phone = document.getElementById("editPhone").value;
-            const description = document.getElementById("editDescription").value;
-            const topic = document.getElementById("editTopic").value;
-
-            const response = await fetch(`/clients/update/${clientId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, phone, description, topic })
-            });
-
-            if (response.ok) {
-                location.reload();
-            } else {
-                alert("Error updating client");
-            }
-        });
-
         async function searchClients() {
     let searchQuery = document.getElementById("searchInput").value.trim();
     let resultsContainer = document.getElementById("searchResults");
@@ -216,20 +101,18 @@
         const response = await fetch(`/clients/search?q=${searchQuery}`);
         const clients = await response.json();
 
-        let resultsHTML = "";
+        let resultsHTML = "<ul>";
         if (clients.length > 0) {
-            resultsHTML = "<ul>";
             clients.forEach(client => {
                 resultsHTML += `
-                    <li onclick="selectClient(${client.id}, '${client.name}', '${client.email}', '${client.phone}', '${client.description}', '${client.topic}')"
-                        style="cursor: pointer; padding: 5px; border-bottom: 1px solid #ddd;">
+                    <li onclick="selectClient('${client.id}', '${client.name}', '${client.email}', '${client.phone}', '${client.topic}', '${client.description}')">
                         <strong>${client.name}</strong> - ${client.email}
                     </li>
                 `;
             });
             resultsHTML += "</ul>";
         } else {
-            resultsHTML = "<p>No matching clients found.</p>";
+            resultsHTML = "<p style='padding: 10px; text-align: center;'>No matching clients found.</p>";
         }
 
         resultsContainer.innerHTML = resultsHTML;
@@ -239,128 +122,91 @@
     }
 }
 
-// Function to select client from search results
-function selectClient(id, name, email, phone, description, topic) {
-    // Hide all clients first
-    document.querySelectorAll(".client-item").forEach(client => client.style.display = "none");
+        function selectClient(id, name, email, phone, topic, description) {
+            let clientListContainer = document.getElementById("clientListContainer");
 
-    // Display the selected client details
-    const selectedClient = document.getElementById(`client-${id}`);
-    if (selectedClient) {
-        selectedClient.style.display = "block";
-    }
+            let existingClient = document.getElementById(`client-${id}`);
+            if (existingClient) return; // Avoid duplicate listings
 
-    // Also update the dropdown selection
-    document.getElementById("clientDropdown").value = id;
+            let clientBox = document.createElement("div");
+            clientBox.classList.add("client-box");
+            clientBox.id = `client-${id}`;
+            clientBox.innerHTML = `
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Phone:</strong> ${phone}</p>
+                <p><strong>Topic:</strong> ${topic}</p>
+                <p><strong>Description:</strong> ${description}</p>
+                <button onclick="openEditForm('${id}', '${name}', '${email}', '${phone}', '${topic}', '${description}')">Edit</button>
+                <button onclick="deleteClient('${id}')">Delete</button>
+                <button type="button" onclick="removeClient('${id}')">Remove</button>
+            `;
 
-    // Ensure details are populated
-    document.getElementById("clientEmail").innerText = email;
-    document.getElementById("clientPhone").innerText = phone;
-    document.getElementById("clientTopic").innerText = topic;
-    document.getElementById("clientDescription").innerText = description;
-    document.getElementById("clientDetails").style.display = "block";
-
-    // Hide search results after selection
-    document.getElementById("searchResults").style.display = "none";
-}
-
+            clientListContainer.appendChild(clientBox);
+            document.getElementById("searchResults").style.display = "none";
+        }
 
         async function deleteClient(clientId) {
             if (confirm("Are you sure you want to delete this client?")) {
                 const response = await fetch(`/clients/delete/${clientId}`, { method: "DELETE" });
                 if (response.ok) {
-                    location.reload();
+                    document.getElementById(`client-${clientId}`).remove();
                 } else {
                     alert("Error deleting client");
                 }
             }
         }
 
-        function showSelectedClient() {
-            let selectedClientId = document.getElementById("clientDropdown").value;
-            let allClients = document.querySelectorAll(".client-item");
-
-            allClients.forEach(client => { client.style.display = "none"; });
-            if (selectedClientId) {
-                document.getElementById(`client-${selectedClientId}`).style.display = "block";
-            }
+        function removeClient(clientId) {
+            document.getElementById(`client-${clientId}`).remove();
         }
+
+        function openEditForm(id, name, email, phone, topic, description) {
+            document.getElementById("editClientId").value = id;
+            document.getElementById("editName").value = name;
+            document.getElementById("editEmail").value = email;
+            document.getElementById("editPhone").value = phone;
+            document.getElementById("editTopic").value = topic;
+            document.getElementById("editDescription").value = description;
+            document.getElementById("editClientModal").style.display = "block";
+        }
+
+        function closeEditForm() {
+            document.getElementById("editClientModal").style.display = "none";
+        }
+
+        function showSelectedClient() {
+    let selectedClientId = document.getElementById("clientDropdown").value;
+
+    if (!selectedClientId) return; // Exit if no client is selected
+
+    // Find the selected client's details from the dropdown options
+    let selectedOption = document.querySelector(`#clientDropdown option[value='${selectedClientId}']`);
+    
+    if (!selectedOption) return;
+
+    // Extract client details stored in the dataset attributes
+    let name = selectedOption.getAttribute("data-name");
+    let email = selectedOption.getAttribute("data-email");
+    let phone = selectedOption.getAttribute("data-phone");
+    let topic = selectedOption.getAttribute("data-topic");
+    let description = selectedOption.getAttribute("data-description");
+
+    // Pass client details to `selectClient` function
+    selectClient(selectedClientId, name, email, phone, topic, description);
+}
+
 
         function toggleMenu() {
-        const mobileMenu = document.getElementById("mobileMenu");
-        mobileMenu.classList.toggle("active");
-    }
-
-    function openAddClientForm() {
-        document.querySelector('form[action="/clients/add"]').scrollIntoView({ behavior: "smooth" });
-        toggleMenu();
-    }
-
-    function toggleAddClientForm() {
-        const formContainer = document.getElementById("addClientFormContainer");
-        formContainer.style.display = formContainer.style.display === "none" ? "block" : "none";
-        document.getElementById("mobileMenu").classList.remove("active"); // Hide menu after click
-    }
-
-
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("searchInput").addEventListener("keyup", searchClients);
-    });
-
-async function searchClients() {
-    let searchQuery = document.getElementById("searchInput").value.trim();
-    let resultsContainer = document.getElementById("searchResults");
-
-    if (searchQuery.length === 0) {
-        resultsContainer.innerHTML = "";
-        resultsContainer.style.display = "none";
-        return;
-    }
-
-    try {
-        const response = await fetch(`/clients/search?q=${searchQuery}`);
-        const clients = await response.json();
-
-        let resultsHTML = "<ul style='list-style: none; padding: 0;'>";
-        if (clients.length > 0) {
-            clients.forEach(client => {
-                resultsHTML += `
-                    <li onclick="selectClient(${client.id}, '${client.name}', '${client.email}', '${client.phone}', '${client.description}', '${client.topic}')"
-                        style="cursor: pointer; padding: 5px; border-bottom: 1px solid #ddd;">
-                        <strong>${client.name}</strong> - ${client.email}
-                    </li>
-                `;
-            });
-            resultsHTML += "</ul>";
-        } else {
-            resultsHTML = "<p>No matching clients found.</p>";
+            let mobileMenu = document.getElementById("mobileMenu");
+            mobileMenu.style.display = mobileMenu.style.display === "block" ? "none" : "block";
         }
 
-        resultsContainer.innerHTML = resultsHTML;
-        resultsContainer.style.display = "block";
-    } catch (error) {
-        console.error("❌ Error searching clients:", error);
-    }
-}
-// Function to show selected client
-function selectClient(id, name, email, phone, description, topic) {
-    document.querySelectorAll(".client-item").forEach(client => client.style.display = "none");
-
-    const selectedClient = document.getElementById(`client-${id}`);
-    if (selectedClient) {
-        selectedClient.style.display = "block";
-    }
-
-    // Hide search results after selection
-    document.getElementById("searchResults").style.display = "none";
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("searchInput").addEventListener("keyup", searchClients);
-});
-
-</script>
-
+        function toggleAddClientForm() {
+            let formContainer = document.getElementById("addClientFormContainer");
+            formContainer.style.display = formContainer.style.display === "none" ? "block" : "none";
+        }
+    </script>
 
 </body>
 </html>
