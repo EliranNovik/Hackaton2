@@ -3,18 +3,93 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    position: relative;
+    color: white;
+}
+
+/* Background Image with Watermark Effect */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('PEXELS3.jpg') no-repeat center center fixed;
+    background-size: cover;
+    opacity: 0.8; /* Lighter for watermark effect */
+    z-index: -2; /* Keeps it behind all content */
 }
 
 /* Navbar Styling */
 .navbar {
-    width: 100%;
-    background-color: rgb(230, 189, 173);
     display: flex;
+    justify-content: center; /* Center everything */
     align-items: center;
     padding: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    position: relative;
 }
 
+/* Navbar Left (Links) */
+.navbar-left {
+    position: absolute;
+    left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-left ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-left ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.navbar-left ul li a:hover {
+    color: lightgray;
+}
+
+/* Centered Search Bar & Client Dropdown */
+.navbar-center {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Search Bar Styling */
+.search-bar {
+    padding: 8px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: black;
+}
+
+/* Dropdown Styling */
+.client-select {
+    padding: 8px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: black;
+}
+
+
+/* Navbar Links */
 .navbar ul {
     list-style: none;
     padding: 0;
@@ -23,14 +98,28 @@ body {
 }
 
 .navbar ul li {
-    margin: 0 20px;
+    position: relative;
+    padding: 10px 20px; /* Add padding to make the hover effect visible */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth transition */
+    margin: 0 10px;
 }
 
 .navbar ul li a {
     text-decoration: none;
     font-weight: bold;
-    color: black;
+    color: white;
     font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+/* Hover Effect for Navbar */
+.navbar ul li:hover {
+    background-color: rgba(30, 123, 120, 0.8); /* Light gray hover effect */
+}
+
+.navbar ul li:hover a {
+    color: rgb(238, 245, 245); /* Change text color on hover */
 }
 
 /* Container Styling */
@@ -38,31 +127,154 @@ body {
     padding: 20px;
 }
 
-/* Background Image for Home Page */
-.home-background {
-    background: url('/Background_pic.jpg') no-repeat center center fixed;
-    background-size: cover;
-    height: 100vh;  /* Full height */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-}
-
 /* Meeting List Styling */
 .meeting-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f9f9f9;
+    background: rgba(255, 255, 255, 0.8); /* Lighter background for contrast */
     padding: 10px;
     margin: 5px 0;
     border-radius: 5px;
+    color: black;
 }
 
 .meeting-item a {
     text-decoration: none;
-    color: blue;
+    color: rgb(14, 132, 118);
     font-weight: bold;
 }
+
+/* Hamburger Menu */
+.menu-toggle {
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    border-radius: 5px;
+    display: block;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    z-index: 1001;
+}
+
+/* Mobile Menu */
+.mobile-menu {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    width: 200px;
+}
+
+.mobile-menu.active {
+    display: block;
+}
+
+.mobile-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mobile-menu ul li {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.mobile-menu ul li:last-child {
+    border-bottom: none;
+}
+
+.mobile-menu ul li a {
+    text-decoration: none;
+    font-size: 16px;
+    color: white;
+    display: block;
+}
+
+
+@media screen and (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar-left {
+        position: static;
+        margin-bottom: 10px;
+    }
+
+    .menu-toggle {
+        display: block; /* Show ☰ on small screens */
+    }
+}
+
+/* Stats Boxes for Citizenship Stats */
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.stat-box {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+}
+
+.stat-box img {
+    width: 40px;
+    height: 30px;
+}
+
+/* Form Button Styling */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: rgba(14, 132, 118, 0.8);
+    color: white;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: rgba(30, 123, 120, 0.9);
+}
+
+#addClientFormContainer {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    margin: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.client-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+    color: black; /* Ensure text is visible */
+    width: 60%; /* Adjust width as needed */
+    max-width: 600px;
+}
+
+

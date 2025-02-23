@@ -22,8 +22,8 @@ const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 router.get('/', async (req, res) => {
     try {
         const meetings = await MeetingModel.getAllMeetings();
-        const clients = await ClientModel.getAllClients();
-        res.render('meetings', { meetings, clients });
+        const clients = await ClientModel.getAllClients(); // Fetch clients for the dropdown
+        res.render('meetings', { meetings, clients, page: 'meetings' });  // Pass clients to EJS
     } catch (err) {
         console.error("❌ Error fetching meetings:", err);
         res.status(500).send("Database error.");
@@ -74,5 +74,6 @@ router.post('/create', async (req, res) => {
         res.status(500).json({ error: "Error creating Google Meet meeting." });
     }
 });
+
 
 module.exports = router;

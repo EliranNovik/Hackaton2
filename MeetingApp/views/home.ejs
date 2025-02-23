@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="/css/styles.css">
     <style>
         body  {
-            background: url('/Background_pic.jpg') no-repeat center center fixed;
-            background-size: cover;
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -16,7 +14,7 @@
 
         .navbar {
             width: 100%;
-            background-color: rgb(230, 189, 173);
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
             padding: 15px;
@@ -37,7 +35,7 @@
         .navbar ul li a {
             text-decoration: none;
             font-weight: bold;
-            color: black;
+            color: white;
             font-size: 18px;
         }
 
@@ -57,7 +55,7 @@
 
         .meeting-item a {
             text-decoration: none;
-            color: blue;
+            color: rgb(24, 110, 106);
             font-weight: bold;
         }
 
@@ -90,28 +88,36 @@
 
     <nav class="navbar">
         <ul>
-            <li><a href="/">🏠 Home</a></li>
-            <li><a href="/clients">👥 Clients</a></li>
-            <li><a href="/meetings">📅 Meetings</a></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/clients">Clients</a></li>
+            <li><a href="/meetings">Meetings</a></li>
         </ul>
     </nav>
 
     <div class="container">
-        <h1>Upcoming Meetings</h1>
-
-        <ul>
-            <% meetings.forEach(meeting => { %>
-                <li class="meeting-item">
-                    <span>
-                        <strong>Client:</strong> <%= meeting.client_name %> |
-                        <strong>Email:</strong> <%= meeting.client_email %> |
-                        <strong>Date:</strong> <%= new Date(meeting.datetime).toLocaleString() %>
-                    </span>
-                    <a href="<%= meeting.teams_link %>" target="_blank">🔗 Join Meeting</a>
-                </li>
-            <% }) %>
-        </ul>
+        <h1>Upcoming Meetings This Week</h1>
+    
+        <% if (Object.keys(meetingsByDay).length > 0) { %>
+            <% for (const day in meetingsByDay) { %>
+                <h2><%= day %></h2>
+                <ul>
+                    <% meetingsByDay[day].forEach(meeting => { %>
+                        <li class="meeting-item">
+                            <span>
+                                <strong>Client:</strong> <%= meeting.client_name %> |
+                                <strong>Email:</strong> <%= meeting.client_email %> |
+                                <strong>Time:</strong> <%= new Date(meeting.datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %>
+                            </span>
+                            <a href="<%= meeting.teams_link %>" target="_blank">🔗 Join Meeting</a>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } %>
+        <% } else { %>
+            <p>No meetings scheduled for this week.</p>
+        <% } %>
     </div>
+    
 
     <h1>Citizenship Statistics</h1>
     

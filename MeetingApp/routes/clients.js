@@ -5,29 +5,24 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         const clients = await ClientModel.getAllClients();
-        res.render('clients', { clients });
+        res.render('clients', { clients, page: 'clients' });  // Pass "clients" page
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Database error");
+        console.error("❌ Error fetching clients:", err);
+        res.status(500).send("Database error.");
     }
 });
 
-// Route to search clients by name or email
-router.get('/search', async (req, res) => {
-    const searchTerm = req.query.q.trim().toLowerCase();
-
+router.get('/meetings', async (req, res) => {
     try {
-        if (!searchTerm) {
-            return res.json([]); // Return empty array if search is empty
-        }
-
-        const clients = await ClientModel.searchClients(searchTerm);
-        res.json(clients);
+        const meetings = await MeetingModel.getAllMeetings();
+        res.render('meetings', { meetings, page: 'meetings' });  // Pass "meetings" page
     } catch (err) {
-        console.error("❌ Error searching clients:", err);
-        res.status(500).json({ error: "❌ Error searching clients." });
+        console.error("❌ Error fetching meetings:", err);
+        res.status(500).send("Database error.");
     }
 });
+
+
 
 
 router.post('/add', async (req, res) => {
@@ -64,5 +59,24 @@ router.delete('/delete/:id', async (req, res) => {
         res.status(500).json({ error: "Error deleting client." });
     }
 });
+
+router.get('/search', async (req, res) => {
+    try {
+        const searchQuery = req.query.q;
+        if (!searchQuery) {
+            return res.json([]); // Return empty array if no search query
+        }
+
+        const result = await ClientModel.searchClients(searchQuery); // Ensure this function exists
+        res.json(result);
+    } catch (err) {
+        console.error("❌ Error searching clients:", err);
+        res.status(500).json({ error: "Database error" });
+    }
+});
+
+
+
+
 
 module.exports = router;

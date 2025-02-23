@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meetings</title>
-    <link rel="stylesheet" href="/MeetingApp/public/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
 
         .navbar {
             width: 100%;
-            background-color: rgb(173, 190, 230);
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
             padding: 15px;
@@ -35,24 +35,62 @@
         .navbar ul li a {
             text-decoration: none;
             font-weight: bold;
-            color: black;
+            color: white;
             font-size: 18px;
         }
 
         .container {
             padding: 20px;
         }
+
+        ul {
+    list-style: none;
+    padding: 0;
+}
+
+.meeting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.meeting-item a {
+    text-decoration: none;
+    color: rgb(37, 110, 94);
+    font-weight: bold;
+}
+
+
+
+        
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <ul>
-            <li><a href="/">🏠 Home</a></li>
-            <li><a href="/clients">👥 Clients</a></li>
-            <li><a href="/meetings">📅 Meetings</a></li>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/clients">Clients</a></li>
+            <li><a href="/meetings">Meetings</a></li>
         </ul>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
     </nav>
+    
+    <!-- Mobile Menu -->
+<div id="mobileMenu" class="mobile-menu">
+    <ul>
+        <% if (typeof page !== 'undefined' && page === 'meetings') { %>
+            <li><a href="#meetingList">View Meetings List</a></li>
+            <li><a href="#createMeetingForm">Create New Meeting</a></li>
+        <% } %>
+    </ul>
+</div>
+
+    
 
     <div class="container">
         <h1>Meetings</h1>
@@ -61,18 +99,20 @@
         <h2>Meeting List</h2>
         <ul>
             <% meetings.forEach(meeting => { %>
-                <li>
-                    <strong>Client:</strong> <%= meeting.client_name %> |
-                    <strong>Email:</strong> <%= meeting.client_email %> |
-                    <strong>Date:</strong> <%= new Date(meeting.datetime).toLocaleString() %> |
-                    
+                <li class="meeting-item">
+                    <span>
+                        <strong>Client:</strong> <%= meeting.client_name %> |
+                        <strong>Email:</strong> <%= meeting.client_email %> |
+                        <strong>Date:</strong> <%= new Date(meeting.datetime).toLocaleString() %>
+                    </span>
+                    <a href="<%= meeting.teams_link %>" target="_blank">🔗 Join Meeting</a>
                 </li>
-                <a href="<%= meeting.teams_link %>" target="_blank">▶️ Join Meeting</a>
             <% }) %>
         </ul>
+        
         <h2>Manage Your Meetings</h2>
 <a href="https://calendar.google.com" target="_blank">
-    <button style="padding: 10px; font-size: 16px; background-color: rgb(173, 190, 230); color: white; border: none; cursor: pointer;">
+    <button style="padding: 10px; font-size: 16px; background-color: rgb(37, 110, 94); color: white; border: none; cursor: pointer;">
         📅 Open Google Calendar
     </button>
 </a>
@@ -104,7 +144,7 @@
             <label for="meetingTime">Time:</label>
             <input type="time" id="meetingTime" name="time" required>
 
-            <button type="submit">➕ Create Meeting</button>
+            <button type="submit">Create Meeting</button>
         </form>
     </div>
 
@@ -148,7 +188,6 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert(`✅ Meeting Created! Link: ${data.meetLink}`);
                     location.reload();
                 } else {
                     alert("❌ Error creating meeting. Check logs.");
@@ -157,6 +196,16 @@
                 alert("❌ Network error while creating meeting.");
             }
         });
+
+        function toggleMenu() {
+        const mobileMenu = document.getElementById("mobileMenu");
+        mobileMenu.classList.toggle("active");
+    }
+
+    function openAddClientForm() {
+        document.querySelector('form[action="/clients/add"]').scrollIntoView({ behavior: "smooth" });
+        toggleMenu();
+    }
     </script>
 
 </body>
